@@ -56,7 +56,7 @@ async function refreshToken(refresh_token) {
 
 async function authorize() {
     try {
-        getAuthorizationPin();
+        getAuthorizationPin(); // TODO store authorization pin in data store, if it was already used process.exit() with link to get a new one, otherwise continue
         const response = await axios.post(
             `${baseUrl}/auth/access_token`, 
             {
