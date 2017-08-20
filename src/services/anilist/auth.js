@@ -5,27 +5,53 @@ import db from '../../storage';
 let token;
 
 function getAuthorizationPin() {
-    const url = `${baseUrl}/auth/authorize?grant_type=authorization_pin&client_id=${config.client_id}&response_type=pin`;
-    console.log('You probably need to update authorization pin env variable from here:', url);
+    const url = `${baseUrl}/auth/authorize?grant_type=authorization_pin&client_id=${clientConfig.client_id}&response_type=pin`;
+    console.info('You probably need to update authorization pin env variable from here:', url);
 }
 
 async function getAccessToken() {
     if (token) {
-        return token;
+        const now = new Date().getTime / 1000;
+        const expires = token.expires;
+        if (now < expires - 60) { // We have at least a minute on this token
+            return token;
+        }
     }
 
     try {
         token = await db.findOne({
             access_token: { $exists: true }
         });
-        console.info('Retrieved AniList Token', token);
-        return token;
+        console.info('Retrieved AniList Token from data store', token);
     } catch(e) {
-        console.log(`Couldn't find access token in datastore`, e);
+        console.log(`Couldn't find access token in datastore`, e.message);
     }
 
-    token = authorize();
+    token = await refreshToken(token.refresh_token);
     return token;
+}
+
+async function refreshToken(refresh_token) {
+    try {
+        const response = await axios.post(
+            `${baseUrl}/auth/access_token`, 
+            {
+                grant_type: 'refresh_token',
+                client_id: clientConfig.client_id,
+                client_secret: clientConfig.client_secret,
+                refresh_token
+            }
+        );
+        token = (await db.update(
+            { access_token: { $exists: true } },
+            { $set: response.data },
+            { returnUpdatedDocs: true }
+        ))[1];
+        return token;
+    } catch(e) {
+        console.error('Error during AniList refresh token request', e.message);
+        return authorize();
+    }
 }
 
 async function authorize() {
@@ -45,27 +71,11 @@ async function authorize() {
         );
         return response.data;
     } catch(e) {
-        console.error('Error during AniList access token acquisition', e);
+        console.error('Error during AniList access token acquisition', e.message);
     }
-}
-
-async function refeshToken(token) {
-
 }
 
 export async function getAuthorizationHeader() {
     const token = await getAccessToken();
     return `${token.token_type} ${token.access_token}`;
 }
-
-// await db.update(
-//     { access_token: { $exists: true } },
-//     {
-//         "access_token": "I8f0S60RMOPNr5Xp8kDDXmuUrQ2ez2kQ3zf6Qhbg",
-//         "token_type": "Bearer",
-//         "expires_in": 3600,
-//         "refresh_token": "DFT5d8kF8ahf4EovvrHAkIGJaUj9Da5yrKKUH15j",
-//         "expires": 1503251785
-//     },
-//     { upsert: true, returnUpdatedDocs: true }
-// );
