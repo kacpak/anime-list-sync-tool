@@ -14,12 +14,12 @@ export async function searchManga(query) {
 
 export async function listAnime() {
     const userList = await getUserList('anime');
-    return userList.lists;
+    return userList.lists || [];
 }
 
 export async function listManga() {
     const userList = await getUserList('manga');
-    return userList.lists;
+    return userList.lists || [];
 }
 
 async function search(series_type, query) {

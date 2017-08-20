@@ -22,12 +22,16 @@ async function getAccessToken() {
         token = await db.findOne({
             access_token: { $exists: true }
         });
-        console.info('Retrieved AniList Token from data store', token);
+        console.debug('Retrieved AniList Token from data store', token);
     } catch(e) {
         console.log(`Couldn't find access token in datastore`, e.message);
     }
 
-    token = await refreshToken(token.refresh_token);
+    if (token) {
+        token = await refreshToken(token.refresh_token);
+    } else {
+        token = await authorize();
+    }
     return token;
 }
 
@@ -47,7 +51,7 @@ async function refreshToken(refresh_token) {
             { $set: response.data },
             { returnUpdatedDocs: true }
         ))[1];
-        console.log('Refreshed AniList access token', token);
+        console.debug('Refreshed AniList access token', token);
         return token;
     } catch(e) {
         console.error('Error during AniList refresh token request', e.message);
@@ -73,6 +77,8 @@ async function authorize() {
         return response.data;
     } catch(e) {
         console.error('Error during AniList access token acquisition', e.message);
+        console.dir(e);
+        process.exit(1);
     }
 }
 

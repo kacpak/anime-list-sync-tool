@@ -8,6 +8,8 @@
 * `cp .env-example .env` in root directory and update `.env` with proper values
 
 ## Running
+* `yarn start` in root directory
 
 ## Development
-* `yarn dev`
+* `yarn build` to build application for use with `yarn start`
+* `yarn dev` to run application in debug mode compiling on the fly

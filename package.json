@@ -1,9 +1,11 @@
 {
   "name": "anime_list_sync_tool",
   "version": "0.0.0",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
+    "start": "node dist/index.js",
+    "build": "rimraf dist && babel src --out-dir dist --source-maps inline",
     "dev": "nodemon src/index.js -e js --exec babel-node --inspect=9222"
   },
   "dependencies": {
@@ -17,6 +19,7 @@
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.0",
-    "nodemon": "^1.11.0"
+    "nodemon": "^1.11.0",
+    "rimraf": "^2.6.1"
   }
 }

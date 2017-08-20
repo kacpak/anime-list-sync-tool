@@ -1,6 +1,11 @@
+import isDebug from './util/is-debug';
 import updateLibrary from './library';
+import {search} from './services/my-anime-list'
 
-console.clear();
+if (isDebug) {
+    console.clear();
+    console.debug('Debug mode detected');
+    setTimeout(() => console.info('Guaranteed debugger inspection ended'), 300 * 1000);
+}
+
 updateLibrary();
-
-setTimeout(() => console.log('delay 120s to allow debuger inspection'), 120 * 1000);
