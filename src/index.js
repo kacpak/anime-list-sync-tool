@@ -1,4 +1,6 @@
-import env from './util/env';
-import * as anilist from './services/anilist';
+import updateLibrary from './library';
 
-anilist.searchAnime('full metal alchemist');
+console.clear();
+updateLibrary();
+
+setTimeout(() => console.log('delay 120s to allow debuger inspection'), 120 * 1000);

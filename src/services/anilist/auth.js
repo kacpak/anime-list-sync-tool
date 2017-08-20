@@ -11,7 +11,7 @@ function getAuthorizationPin() {
 
 async function getAccessToken() {
     if (token) {
-        const now = new Date().getTime / 1000;
+        const now = new Date().getTime() / 1000;
         const expires = token.expires;
         if (now < expires - 60) { // We have at least a minute on this token
             return token;
@@ -42,11 +42,12 @@ async function refreshToken(refresh_token) {
                 refresh_token
             }
         );
-        token = (await db.update(
+        const token = (await db.update(
             { access_token: { $exists: true } },
             { $set: response.data },
             { returnUpdatedDocs: true }
         ))[1];
+        console.log('Refreshed AniList access token', token);
         return token;
     } catch(e) {
         console.error('Error during AniList refresh token request', e.message);
