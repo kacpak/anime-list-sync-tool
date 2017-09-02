@@ -76,3 +76,11 @@ export const commonLibraryEntry = {
     finished: undefined,
     watchedEpisodes: 0
 };
+
+export const invalidCommonLibraryEntry = {
+    status: ANIME_STATUS.watching,
+    score: '0',
+    started: undefined,
+    finished: undefined,
+    watchedEpisodes: 0
+}

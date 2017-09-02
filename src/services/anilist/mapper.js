@@ -27,4 +27,10 @@ export function mapEntryToCommon(aniListEntry) {
 }
 
 export function isCommonEqualToEntry(commonEntry, aniListEntry) {
+    const mappedAniListEntry = mapEntryToCommon(aniListEntry);
+    return mappedAniListEntry.status === commonEntry.status
+        && mappedAniListEntry.score === commonEntry.score
+        && mappedAniListEntry.started === commonEntry.started
+        && mappedAniListEntry.finished === commonEntry.finished
+        && mappedAniListEntry.watchedEpisodes === commonEntry.watchedEpisodes
 }

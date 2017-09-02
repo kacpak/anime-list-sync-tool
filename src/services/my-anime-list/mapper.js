@@ -29,3 +29,12 @@ export function mapEntryToCommon(malEntry) {
         // rewatchedEpisodes: parseInt(malEntry.my_rewatching_ep)
     };
 }
+
+export function isCommonEqualToEntry(commonEntry, aniListEntry) {
+    const mappedEntry = mapEntryToCommon(aniListEntry);
+    return mappedEntry.status === commonEntry.status
+        && mappedEntry.score === commonEntry.score
+        && mappedEntry.started === commonEntry.started
+        && mappedEntry.finished === commonEntry.finished
+        && mappedEntry.watchedEpisodes === commonEntry.watchedEpisodes
+}
