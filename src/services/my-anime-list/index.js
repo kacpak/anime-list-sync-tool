@@ -33,6 +33,7 @@ export async function getUserList(type) {
         const response = await axios.get(`https://myanimelist.net/malappinfo.php?u=${env.MAL_USERNAME}&status=all&type=${type}`);
 
         const { myanimelist: { [type]: results }} = parser.toJson(response.data, {object: true});
+        console.log('mal user list', results);
         return results;
     } catch(e) {
         console.error('Error getting MyAnimeList user list', e);

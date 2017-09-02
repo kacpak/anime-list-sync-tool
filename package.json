@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node dist/index.js",
     "build": "rimraf dist && babel src --out-dir dist --source-maps inline",
-    "dev": "nodemon src/index.js -e js --exec babel-node --inspect=9222"
+    "dev": "nodemon src/index.js -e js --exec babel-node --inspect=9222",
+    "test": "nyc --reporter=html --reporter=text-summary --all mocha --compilers js:babel-core/register ./test/**/*.spec.js",
+    "test:dev": "yarn test -- --watch"
   },
   "dependencies": {
     "axios": "^0.16.2",
@@ -19,7 +21,11 @@
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.0",
+    "chai": "^4.1.2",
+    "mocha": "^3.5.0",
     "nodemon": "^1.11.0",
-    "rimraf": "^2.6.1"
+    "nyc": "^11.1.0",
+    "rimraf": "^2.6.1",
+    "sinon": "^3.2.1"
   }
 }

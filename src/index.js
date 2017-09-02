@@ -1,6 +1,5 @@
 import isDebug from './util/is-debug';
 import updateLibrary from './library';
-import {search} from './services/my-anime-list'
 
 if (isDebug) {
     console.clear();
@@ -8,4 +7,4 @@ if (isDebug) {
     setTimeout(() => console.info('Guaranteed debugger inspection ended'), 300 * 1000);
 }
 
-updateLibrary();
+// updateLibrary();

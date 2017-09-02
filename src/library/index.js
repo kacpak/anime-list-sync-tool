@@ -24,9 +24,9 @@ async function getAniListLibraryData() {
             ...animeList.map(mapEntry('anime')),
             ...mangaList.map(mapEntry('manga'))
         ];
-        
+
         return library;
-    } catch (e) {        
+    } catch (e) {
         console.error('There was a problem during AniList library creation', e.message);
         console.dir(e);
         process.exit(2);
@@ -82,7 +82,6 @@ async function findMalEntry(entry) {
     }
 }
 
-// TODO try to fetch MAL library at the same time as anilist, then try to merge them in memory, then merge watch data and check if it needs updating
 export default async function updateLibrary() {
     // 1. Get libraries
     console.log('Getting AniList library data...');
