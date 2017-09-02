@@ -1,4 +1,4 @@
-# Anime List Synchronisation Tool
+# Anime List Synchronisation Tool [![Build Status](https://travis-ci.org/kacpak/anime_list_sync_tool.svg?branch=master)](https://travis-ci.org/kacpak/anime_list_sync_tool)
 > Synchronizes your anime/manga lists between AniList and MyAnimeList
 
 ## Requirements
@@ -13,3 +13,5 @@
 ## Development
 * `yarn build` to build application for use with `yarn start`
 * `yarn dev` to run application in debug mode compiling on the fly
+* `yarn test` to run tests
+    * `yarn test:dev` to run tests continously with code changes watcher
