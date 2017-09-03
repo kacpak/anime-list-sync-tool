@@ -5,9 +5,9 @@
   "license": "MIT",
   "scripts": {
     "start": "node dist/index.js",
-    "build": "rimraf dist && babel src --out-dir dist --source-maps inline",
-    "dev": "nodemon src/index.js -e js --exec babel-node --inspect=9222",
-    "test": "nyc --reporter=html --reporter=text-summary --all mocha --compilers js:babel-core/register ./test/**/*.spec.js",
+    "build": "rimraf dist && tsc",
+    "dev": "nodemon src/index.ts -e ts --exec ts-node --inspect=9222",
+    "test": "nyc -e .ts --cache --reporter=html --reporter=text-summary -x coverage -x **/*.mocks.ts -x dist -x **/*.spec.ts --all mocha --compilers ts:ts-node/register ./src/**/*.spec.ts",
     "test:dev": "yarn test -- --watch"
   },
   "files": [
@@ -17,19 +17,22 @@
   "dependencies": {
     "axios": "^0.16.2",
     "dotenv": "^4.0.0",
-    "express": "^4.15.4",
     "nedb-promise": "^2.0.1",
     "xml2json": "^0.11.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.6.0",
+    "@types/axios": "^0.14.0",
+    "@types/chai": "^4.0.4",
+    "@types/mocha": "^2.2.42",
+    "@types/node": "^8.0.26",
+    "@types/sinon": "^2.3.3",
     "chai": "^4.1.2",
     "mocha": "^3.5.0",
     "nodemon": "^1.11.0",
     "nyc": "^11.1.0",
     "rimraf": "^2.6.1",
-    "sinon": "^3.2.1"
+    "sinon": "^3.2.1",
+    "ts-node": "^3.3.0",
+    "typescript": "^2.5.2"
   }
 }

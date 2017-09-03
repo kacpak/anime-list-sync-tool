@@ -1,4 +1,4 @@
-import {ANIME_STATUS} from '../src/services/libraryEntry';
+import {ANIME_STATUS} from './libraryEntry';
 
 export const aniListLibraryEntry = {
     added_time: "2017-09-03T06:41:22+09:00",

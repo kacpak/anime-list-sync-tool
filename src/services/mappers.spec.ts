@@ -1,7 +1,7 @@
 import {expect} from 'chai';
-import * as anilist from '../../src/services/anilist/mapper';
-import * as mal from '../../src/services/my-anime-list/mapper';
-import {myAnimeListLibraryEntry, aniListLibraryEntry, commonLibraryEntry, invalidCommonLibraryEntry} from '../response.mocks';
+import * as anilist from './anilist/mapper';
+import * as mal from './my-anime-list/mapper';
+import {myAnimeListLibraryEntry, aniListLibraryEntry, commonLibraryEntry, invalidCommonLibraryEntry} from './response.mocks';
 
 describe('Service mappers', () => {
     const mappers = {
@@ -31,7 +31,6 @@ describe('Service mappers', () => {
             })
 
             it('should reject entry if status differs', () => {
-                // TODO check for different combinations of values
                 const invalidEqualCheck = service.isEqualsFunction(invalidCommonLibraryEntry, service.entry);
                 expect(invalidEqualCheck, 'entries with fundamentally different values should be rejected').to.be.false;
             })
