@@ -10,6 +10,10 @@
     "test": "nyc --reporter=html --reporter=text-summary --all mocha --compilers js:babel-core/register ./test/**/*.spec.js",
     "test:dev": "yarn test -- --watch"
   },
+  "files": [
+    "dist",
+    ".env-example"
+  ],
   "dependencies": {
     "axios": "^0.16.2",
     "dotenv": "^4.0.0",
