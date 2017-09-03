@@ -1,5 +1,5 @@
-import {listAnime, listManga} from '../services/anilist';
-import {search, getUserList} from '../services/my-anime-list';
+import {listAnime, listManga} from '../services/AniList';
+import {search, getUserList} from '../services/MyAnimeList';
 import db from '../storage';
 
 async function getAniListLibraryData() {

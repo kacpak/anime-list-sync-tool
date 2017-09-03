@@ -27,7 +27,7 @@ export function getCommonAnimeEntry(aniListEntry: LibraryEntry): CommonAnimeEntr
     }
 }
 
-export function isCommonAnimeEntryEqual(commonEntry: CommonAnimeEntry, entry: LibraryEntry) {
+export function isCommonAnimeEntryEqual(commonEntry: CommonAnimeEntry, entry: LibraryEntry): boolean {
     const mappedAniListEntry = getCommonAnimeEntry(entry);
     return mappedAniListEntry.status === commonEntry.status
         && mappedAniListEntry.score === commonEntry.score
