@@ -23,3 +23,5 @@ export interface LibraryEntry {
 type EntryStatus = '1'|'2'|'3'|'4'|'6';
 export type AnimeEntryStatus = EntryStatus;
 export type MangaEntryStatus = EntryStatus;
+
+export type SeriesType = 'anime'|'manga';

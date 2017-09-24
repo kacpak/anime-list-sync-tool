@@ -1,16 +1,17 @@
 import axios from 'axios';
 import parser from 'xml2json';
 import env from '../../util/env';
+import { SeriesType, LibraryEntry } from './types';
 
-export async function searchAnime(query) {
+export async function searchAnime(query: string): Promise<any|undefined> {
     return search('anime', query);
 }
 
-export async function searchManga(query) {
+export async function searchManga(query: string): Promise<any|undefined> {
     return search('manga', query);
 }
 
-export async function search(type, query) {
+export async function search(type: SeriesType, query: string): Promise<any|undefined> {
     try {
         const response = await axios.get(`https://myanimelist.net/api/${type}/search.xml`, {
             auth: {
@@ -28,14 +29,14 @@ export async function search(type, query) {
     }
 }
 
-export async function getUserList(type) {
+export async function getUserList(type: SeriesType): Promise<LibraryEntry[]> {
     try {
         const response = await axios.get(`https://myanimelist.net/malappinfo.php?u=${env.MAL_USERNAME}&status=all&type=${type}`);
 
         const { myanimelist: { [type]: results }} = parser.toJson(response.data, {object: true});
-        console.log('mal user list', results);
         return results;
     } catch(e) {
         console.error('Error getting MyAnimeList user list', e);
+        return [];
     }
 }

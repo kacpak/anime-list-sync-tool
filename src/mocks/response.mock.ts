@@ -14,4 +14,4 @@ export const cowboyWatchingEntry: CommonAnimeEntry = {
     started: undefined,
     finished: undefined,
     watchedEpisodes: 0
-}
+};
