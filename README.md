@@ -1,4 +1,4 @@
-# Anime List Synchronisation Tool [![Build Status](https://travis-ci.org/kacpak/anime_list_sync_tool.svg?branch=master)](https://travis-ci.org/kacpak/anime_list_sync_tool)
+# Anime List Synchronisation Tool [![Build Status](https://travis-ci.org/kacpak/anime-list-sync-tool.svg?branch=master)](https://travis-ci.org/kacpak/anime-list-sync-tool)
 > Synchronizes your anime/manga lists between AniList and MyAnimeList
 
 ## Requirements
