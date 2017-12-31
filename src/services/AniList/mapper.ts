@@ -1,37 +1,36 @@
-import {CommonAnimeEntry, CommonMangaEntry, AnimeStatus, MangaStatus} from '../common';
-import {AnimeEntryStatus, MangaEntryStatus, LibraryEntry} from './types';
+import {CommonStatusEntry, ListEntryMapper} from '../common';
+import {MediaList, MediaListStatus} from './types';
 
-function mapStatusToCommon(status: AnimeEntryStatus): AnimeStatus {
-    switch(status) {
-        case 'watching': return 'watching';
-        case 'completed': return 'completed';
-        case 'on-hold': return 'on-hold';
-        case 'dropped': return 'dropped';
-        case 'plan to watch': return 'plan-to-watch';
+class AniListMapper implements ListEntryMapper<MediaList> {
+    exportToCommon(entry: MediaList, common?: CommonStatusEntry): CommonStatusEntry {
+        const commonProposal: CommonStatusEntry = {
+            type: entry.media.type,
+            status: this.getStatus(entry.status),
+            score: this.getScore(entry.score),
+            progress: entry.progress,
+            progressVolumes: entry.progressVolumes,
+            repeat: entry.repeat,
+            anilistId: entry.media.id,
+            malId: entry.media.idMal,
+            services: {
+                anilist: entry
+            }
+        };
+
+        if (commonProposal.malId === undefined || commonProposal.malId === 0) {
+            console.error('NO MAL data for ', entry.media.title.english);
+        }
+
+        return Object.assign({}, common, commonProposal);
+    }
+
+    getScore(aniListScore: number): number {
+        return Math.round(aniListScore);
+    }
+
+    getStatus(aniListStatus: MediaListStatus): MediaListStatus {
+        return aniListStatus;
     }
 }
 
-function mapDateToCommon(date: string|null): string|undefined {
-    if (date) {
-        return date.slice(0, 8);
-    }
-}
-
-export function getCommonAnimeEntry(aniListEntry: LibraryEntry): CommonAnimeEntry {
-    return {
-        status: mapStatusToCommon(aniListEntry.list_status as AnimeEntryStatus),
-        score: aniListEntry.score_raw,
-        started: mapDateToCommon(aniListEntry.started_on),
-        finished: mapDateToCommon(aniListEntry.finished_on),
-        watchedEpisodes: aniListEntry.episodes_watched
-    }
-}
-
-export function isCommonAnimeEntryEqual(commonEntry: CommonAnimeEntry, entry: LibraryEntry): boolean {
-    const mappedAniListEntry = getCommonAnimeEntry(entry);
-    return mappedAniListEntry.status === commonEntry.status
-        && mappedAniListEntry.score === commonEntry.score
-        && mappedAniListEntry.started === commonEntry.started
-        && mappedAniListEntry.finished === commonEntry.finished
-        && mappedAniListEntry.watchedEpisodes === commonEntry.watchedEpisodes
-}
+export default new AniListMapper();

@@ -1,88 +1,44 @@
-import {baseUrl, clientConfig} from './config';
-import axios from 'axios';
-import db from '../../storage';
+import * as opn from 'opn';
+import * as path from 'path';
+import * as express from 'express';
+import * as bodyParser from 'body-parser';
+import { URLSearchParams } from 'url';
+import env from '../../util/env';
 
-let token;
-
-function getAuthorizationPin() {
-    const url = `${baseUrl}/auth/authorize?grant_type=authorization_pin&client_id=${clientConfig.client_id}&response_type=pin`;
-    console.info('You probably need to update authorization pin env variable from here:', url);
+export interface Token {
+    access_token: string;
+    token_type: string;
+    expires_in: string;
 }
 
-async function getAccessToken() {
-    if (token) {
-        const now = new Date().getTime() / 1000;
-        const expires = token.expires;
-        if (now < expires - 60) { // We have at least a minute on this token
-            return token;
-        }
-    }
+async function fetchAccessToken(): Promise<Token> {
+    const query = {
+        client_id: env.ANILIST_CLIENT_ID,
+        response_type: 'token'
+    };
+    const url = `https://anilist.co/api/v2/oauth/authorize?${new URLSearchParams(query).toString()}`;
+    opn(url);
 
-    try {
-        token = await db.findOne({
-            access_token: { $exists: true }
+    return new Promise<Token>(resolve => {
+        const app = express();
+        const server = app.listen(8666);
+        app.use(bodyParser.json());
+        app.get('/', (req, res) => {
+            res.sendFile(path.join(__dirname, 'redirect.html'));
         });
-        console.debug('Retrieved AniList Token from data store', token);
-    } catch(e) {
-        console.log(`Couldn't find access token in datastore`, e.message);
-    }
+        app.post('/token', (req, res) => {
+            const tokenData: Token = req.body;
+            res.sendStatus(200);
+            server.close();
+            resolve(tokenData);
+        });
+    });
+}
 
-    if (token) {
-        token = await refreshToken(token.refresh_token);
-    } else {
-        token = await authorize();
+let token: Token;
+export async function getAccessToken(): Promise<Token> {
+    if (!token) {
+        token = await fetchAccessToken();
     }
     return token;
-}
-
-async function refreshToken(refresh_token) {
-    try {
-        const response = await axios.post(
-            `${baseUrl}/auth/access_token`,
-            {
-                grant_type: 'refresh_token',
-                client_id: clientConfig.client_id,
-                client_secret: clientConfig.client_secret,
-                refresh_token
-            }
-        );
-        const token = (await db.update(
-            { access_token: { $exists: true } },
-            { $set: response.data },
-            { returnUpdatedDocs: true }
-        ))[1];
-        console.debug('Refreshed AniList access token', token);
-        return token;
-    } catch(e) {
-        console.error('Error during AniList refresh token request', e.message);
-        return authorize();
-    }
-}
-
-async function authorize() {
-    try {
-        getAuthorizationPin(); // TODO store authorization pin in data store, if it was already used process.exit() with link to get a new one, otherwise continue
-        const response = await axios.post(
-            `${baseUrl}/auth/access_token`,
-            {
-                grant_type: 'authorization_pin',
-                ...clientConfig
-            }
-        );
-        await db.update(
-            { access_token: { $exists: true } },
-            response.data,
-            { upsert: true, returnUpdatedDocs: true }
-        );
-        return response.data;
-    } catch(e) {
-        console.error('Error during AniList access token acquisition', e.message);
-        console.dir(e);
-        process.exit(1);
-    }
-}
-
-export async function getAuthorizationHeader() {
-    const token = await getAccessToken();
-    return `${token.token_type} ${token.access_token}`;
 }

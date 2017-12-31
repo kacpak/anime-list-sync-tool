@@ -6,9 +6,9 @@
   "scripts": {
     "start": "node dist/index.js",
     "build": "rimraf dist && tsc",
-    "dev": "nodemon src/index.ts -e ts --exec ts-node",
+    "dev": "nodemon src/index.ts -e ts,html --exec ts-node",
     "test": "nyc -e .ts --cache --reporter=html --reporter=text-summary -x coverage -x **/*.mocks.ts -x dist -x **/*.spec.ts --all mocha --compilers ts:ts-node/register ./src/**/*.spec.ts",
-    "test:dev": "yarn test -- --watch"
+    "test:dev": "yarn test --watch"
   },
   "files": [
     "dist",
@@ -16,16 +16,22 @@
   ],
   "dependencies": {
     "axios": "^0.16.2",
+    "body-parser": "^1.18.2",
     "dotenv": "^4.0.0",
+    "express": "^4.16.2",
     "nedb-promise": "^2.0.1",
-    "xml2json": "^0.11.0"
+    "opn": "^5.1.0",
+    "xml2js": "^0.4.19"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
+    "@types/body-parser": "^1.16.8",
     "@types/chai": "^4.0.4",
+    "@types/express": "^4.11.0",
     "@types/mocha": "^2.2.42",
     "@types/node": "^8.0.26",
     "@types/sinon": "^2.3.3",
+    "@types/xml2js": "^0.4.2",
     "chai": "^4.1.2",
     "mocha": "^3.5.0",
     "nodemon": "^1.11.0",

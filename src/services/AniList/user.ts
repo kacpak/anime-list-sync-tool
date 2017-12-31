@@ -1,23 +1,23 @@
-import axios from 'axios';
-import {baseUrl} from './config';
-import {getAuthorizationHeader} from './auth';
+import {User} from './types';
+import {graphql} from './request';
 
-let user;
-
-export default async function getUser() {
-    if (user) {
-        return user;
-    }
-
-    try {
-        const response = await axios.get(`${baseUrl}/user`, {
-            headers: {
-                Authorization: await getAuthorizationHeader()
+let user: User;
+export async function getUser(): Promise<User|undefined> {
+    if (!user) {
+        try {
+            const viewer = await graphql(`
+            query {
+                Viewer {
+                    id, name
+                }
             }
-        });
-        return response.data;
-    } catch(e) {
-        console.error('There was a problem during current user fetch', e.message);
-        console.dir(e);
+            `);
+            user = viewer.Viewer;
+
+        } catch (e) {
+            console.error(e);
+        }
     }
+
+    return user;
 }

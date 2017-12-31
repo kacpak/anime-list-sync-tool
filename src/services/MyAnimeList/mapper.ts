@@ -1,41 +1,49 @@
-import {CommonAnimeEntry, CommonMangaEntry, AnimeStatus, MangaStatus} from '../common';
-import {AnimeEntryStatus, LibraryEntry} from './types';
+import {CommonStatusEntry, ListEntryMapper} from '../common';
+import {AnimeLibraryEntry, LibraryEntry, MangaLibraryEntry} from './types';
+import {MediaListStatus} from "../AniList/types";
 
-function mapStatusToCommon(status: AnimeEntryStatus): AnimeStatus {
-    switch(status) {
-        case '1': return 'watching';
-        case '2': return 'completed';
-        case '3': return 'on-hold';
-        case '4': return 'dropped';
-        case '6': return 'plan-to-watch';
+class MyAnimeListMapper implements ListEntryMapper<LibraryEntry> {
+    exportToCommon(entry: LibraryEntry, common?: CommonStatusEntry): CommonStatusEntry {
+        const commonProposal: Partial<CommonStatusEntry> = {
+            status: this.getStatus(entry.my_status),
+            score: this.getScore(entry.my_score),
+            services: {
+                mal: entry
+            }
+        };
+
+        if (entry['series_animedb_id']) {
+            const animeEntry = entry as AnimeLibraryEntry;
+            commonProposal.type = 'ANIME';
+            commonProposal.malId = parseInt(animeEntry.series_animedb_id || '');
+            commonProposal.progress = parseInt(animeEntry.my_watched_episodes);
+            commonProposal.repeat = parseInt(animeEntry.my_rewatching);
+        } else {
+            const mangaEntry = entry as MangaLibraryEntry;
+            commonProposal.type = 'MANGA';
+            commonProposal.malId = parseInt(mangaEntry.series_mangadb_id || '');
+            commonProposal.progress = parseInt(mangaEntry.my_read_chapters);
+            commonProposal.progressVolumes = parseInt(mangaEntry.my_read_volumes);
+            commonProposal.repeat = parseInt(mangaEntry.my_rereadingg);
+        }
+
+        return Object.assign({}, common, commonProposal) as CommonStatusEntry;
+    }
+
+    getScore(malScore: string): number {
+        return parseInt(malScore);
+    }
+
+    getStatus(malStatus: string): MediaListStatus {
+        switch(malStatus) {
+            case '1': return 'CURRENT';
+            case '2': return 'COMPLETED';
+            case '3': return 'PAUSED';
+            case '4': return 'DROPPED';
+            case '6': return 'PLANNING';
+            default: return 'PLANNING';
+        }
     }
 }
 
-function mapDateToCommon(date: string): string|undefined {
-    if (date !== '0000-00-00') {
-        return date;
-    }
-}
-
-export function getCommonAnimeEntry(animeEntry: LibraryEntry): CommonAnimeEntry {
-    const score = parseInt(animeEntry.my_score) * 10;
-    return {
-        status: mapStatusToCommon(animeEntry.my_status),
-        score,
-        started: mapDateToCommon(animeEntry.my_start_date),
-        finished: mapDateToCommon(animeEntry.my_finish_date),
-        watchedEpisodes: parseInt(animeEntry.my_watched_episodes),
-        // rewatching: malEntry.my_rewatching !== '0',
-        // rewatchedEpisodes: parseInt(malEntry.my_rewatching_ep)
-    };
-}
-
-export function isCommonAnimeEntryEqual(commonEntry: CommonAnimeEntry, entry: LibraryEntry): boolean {
-    // MAL uses 0-10 score, so it needs to be taken care in conversion (83 == 80)
-    const mappedEntry = getCommonAnimeEntry(entry);
-    return mappedEntry.status === commonEntry.status
-        && mappedEntry.score === commonEntry.score
-        && mappedEntry.started === commonEntry.started
-        && mappedEntry.finished === commonEntry.finished
-        && mappedEntry.watchedEpisodes === commonEntry.watchedEpisodes
-}
+export default new MyAnimeListMapper();

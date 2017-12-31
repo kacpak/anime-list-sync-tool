@@ -1,52 +1,75 @@
-import axios from 'axios';
-import {baseUrl} from './config';
-import {getAuthorizationHeader} from './auth';
-import db from '../../storage';
-import getUser from './user';
+import {MediaList, MediaLists, MediaType, User} from './types';
+import {getUser} from './user';
+import {graphql} from './request';
+import mapper from './mapper';
 
-export async function searchAnime(query) {
-    return search('anime', query);
+export * from './types';
+export {mapper};
+
+export async function getLibrary(): Promise<MediaList[]> {
+    await getUser(); // to prefetch user, so no 2 express instances for access_token will be generated during list fetch
+    const [animeLists, mangaLists] = await Promise.all([
+        getMediaStatusList('ANIME'),
+        getMediaStatusList('MANGA')
+    ]);
+
+    return [
+        ...(animeLists.completed || []),
+        ...(animeLists.current || []),
+        ...(animeLists.dropped || []),
+        ...(animeLists.paused || []),
+        ...(animeLists.planning || []),
+        ...(mangaLists.completed || []),
+        ...(mangaLists.current || []),
+        ...(mangaLists.dropped || []),
+        ...(mangaLists.paused || []),
+        ...(mangaLists.planning || [])
+    ];
 }
 
-export async function searchManga(query) {
-    return search('manga', query);
-}
-
-export async function listAnime() {
-    const userList = await getUserList('anime');
-    return userList.lists || [];
-}
-
-export async function listManga() {
-    const userList = await getUserList('manga');
-    return userList.lists || [];
-}
-
-async function search(series_type, query) {
+async function getMediaStatusList(type: MediaType): Promise<MediaLists> {
     try {
-        const response = await axios.get(`${baseUrl}/${series_type}/search/${query}`, {
-            headers: {
-                Authorization: await getAuthorizationHeader()
+        const { id } = await getUser() as User;
+        const mediaCollection = await graphql(`
+        query ($id: Int) {
+            MediaListCollection (userId: $id, type: ${type}) {
+                statusLists {
+                    id
+                    mediaId
+                    status
+                    score
+                    progress
+                    progressVolumes
+                    repeat
+                    notes
+                    startedAt {
+                      year
+                      month
+                      day
+                    }
+                    updatedAt
+                    media {
+                        id
+                        idMal
+                        type
+                        title {
+                          romaji
+                          english
+                          native
+                          userPreferred
+                        }
+                      }
+                }
             }
+        }
+        `, {
+            id
         });
-        return response.data;
-    } catch(e) {
-        console.error('There was a problem during search', e.message);
-        console.dir(e);
-    }
-}
 
-async function getUserList(series_type) {
-    try {
-        const user = await getUser();
-        const response = await axios.get(`${baseUrl}/user/${user.id}/${series_type}list`, {
-            headers: {
-                Authorization: await getAuthorizationHeader()
-            }
-        });
-        return response.data;
-    } catch(e) {
-        console.error('There was a problem during user list fetch', e.message);
-        console.dir(e);
+        return mediaCollection.MediaListCollection.statusLists
+
+    } catch (e) {
+        console.error(e.response);
+        return {} as MediaLists;
     }
 }
