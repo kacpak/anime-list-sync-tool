@@ -72,8 +72,8 @@ async function findDifferences(commonLibrary: CommonStatusEntry[]) {
             const myAnimeListChange: Partial<ChangeData> = {};
             const aniListChange: Partial<ChangeData> = {};
 
-            const malScore = myAnimeList.mapper.getScore(entry.services.myAnimeList.my_score);
-            const aniListScore = aniList.mapper.getScore(entry.services.aniList.score);
+            const malScore = myAnimeList.mapper.getCommonScore(entry.services.myAnimeList.my_score);
+            const aniListScore = aniList.mapper.getCommonScore(entry.services.aniList.score);
             if (malScore != aniListScore) {
                 if (aniListScore) {
                     myAnimeListChange.score = aniListScore;
@@ -82,8 +82,8 @@ async function findDifferences(commonLibrary: CommonStatusEntry[]) {
                 }
             }
 
-            const malStatus = myAnimeList.mapper.getStatus(entry.services.myAnimeList.my_status);
-            const aniListStatus = aniList.mapper.getStatus(entry.services.aniList.status);
+            const malStatus = myAnimeList.mapper.getCommonStatus(entry.services.myAnimeList.my_status);
+            const aniListStatus = aniList.mapper.getCommonStatus(entry.services.aniList.status);
             if (malStatus != aniListStatus) {
                 myAnimeListChange.status = aniListStatus;
             }
@@ -136,20 +136,28 @@ async function findDifferences(commonLibrary: CommonStatusEntry[]) {
 
     console.log('Total #', commonLibrary.length);
     console.log('Changes #', changes.myAnimeList.length + changes.aniList.length);
-    console.log();
-    const printChange = (change: Change) => {
-        console.log(change.type);
-        console.log('id', change.data.id, 'type', change.data.type);
-        change.data.status && console.log('status', change.data.status);
-        change.data.score && console.log('score', change.data.score);
-        change.data.progress && console.log('progress', change.data.progress);
-        change.data.progressVolumes && console.log('status', change.data.progressVolumes);
-        console.log();
-    };
-    console.log('## Changes in MyAnimeList', changes.myAnimeList.length);
-    changes.myAnimeList.forEach(printChange);
-    console.log('## Changes in AniList', changes.aniList.length);
-    changes.aniList.forEach(printChange);
+    // console.log();
+    // const printChange = (change: Change) => {
+    //     console.log(change.type);
+    //     console.log('id', change.data.id, 'type', change.data.type);
+    //     change.data.status && console.log('status', change.data.status);
+    //     change.data.score && console.log('score', change.data.score);
+    //     change.data.progress && console.log('progress', change.data.progress);
+    //     change.data.progressVolumes && console.log('status', change.data.progressVolumes);
+    //     console.log();
+    // };
+    // console.log('## Changes in MyAnimeList', changes.myAnimeList.length);
+    // changes.myAnimeList.forEach(printChange);
+    // console.log('## Changes in AniList', changes.aniList.length);
+    // changes.aniList.forEach(printChange);
+
+
+    changes.myAnimeList.filter(change => change.type === 'CREATE').forEach(async change => {
+        await myAnimeList.addToLibrary(change.data);
+    });
+    changes.myAnimeList.filter(change => change.type === 'UPDATE').forEach(async change => {
+        await myAnimeList.updateInLibrary(change.data);
+    });
 }
 
 (async function run() {

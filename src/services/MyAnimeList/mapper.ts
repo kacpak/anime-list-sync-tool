@@ -4,8 +4,8 @@ import {AnimeLibraryEntry, LibraryEntry, MangaLibraryEntry} from './types';
 class MyAnimeListMapper implements ListEntryMapper<LibraryEntry> {
     exportToCommon(entry: LibraryEntry, common?: CommonStatusEntry): CommonStatusEntry {
         const commonProposal: Partial<CommonStatusEntry> = {
-            status: this.getStatus(entry.my_status),
-            score: this.getScore(entry.my_score),
+            status: this.getCommonStatus(entry.my_status),
+            score: this.getCommonScore(entry.my_score),
             services: {
                 myAnimeList: entry
             }
@@ -29,11 +29,11 @@ class MyAnimeListMapper implements ListEntryMapper<LibraryEntry> {
         return Object.assign({}, common, commonProposal) as CommonStatusEntry;
     }
 
-    getScore(malScore: string): number {
+    getCommonScore(malScore: string): number {
         return parseInt(malScore);
     }
 
-    getStatus(malStatus: string): CommonStatus {
+    getCommonStatus(malStatus: string): CommonStatus {
         switch(malStatus) {
             case '1': return 'CURRENT';
             case '2': return 'COMPLETED';
@@ -41,6 +41,17 @@ class MyAnimeListMapper implements ListEntryMapper<LibraryEntry> {
             case '4': return 'DROPPED';
             case '6': return 'PLANNING';
             default: return 'PLANNING';
+        }
+    }
+
+    getNativeStatus(commonStatus: CommonStatus): string {
+        switch(commonStatus) {
+            case 'CURRENT': return '1';
+            case 'COMPLETED': return '2';
+            case 'PAUSED': return '3';
+            case 'DROPPED': return '4';
+            case 'PLANNING': return '6';
+            case 'REPEATING': return '2';
         }
     }
 }

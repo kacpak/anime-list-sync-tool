@@ -5,8 +5,8 @@ class AniListMapper implements ListEntryMapper<MediaList> {
     exportToCommon(entry: MediaList, common?: CommonStatusEntry): CommonStatusEntry {
         const commonProposal: CommonStatusEntry = {
             type: entry.media.type,
-            status: this.getStatus(entry.status),
-            score: this.getScore(entry.score),
+            status: this.getCommonStatus(entry.status),
+            score: this.getCommonScore(entry.score),
             progress: entry.progress,
             progressVolumes: entry.progressVolumes,
             repeat: entry.repeat,
@@ -24,12 +24,16 @@ class AniListMapper implements ListEntryMapper<MediaList> {
         return Object.assign({}, common, commonProposal);
     }
 
-    getScore(aniListScore: number): number {
+    getCommonScore(aniListScore: number): number {
         return Math.round(aniListScore);
     }
 
-    getStatus(aniListStatus: MediaListStatus): CommonStatus {
+    getCommonStatus(aniListStatus: MediaListStatus): CommonStatus {
         return aniListStatus;
+    }
+
+    getNativeStatus(commonStatus: CommonStatus): MediaListStatus {
+        return commonStatus;
     }
 }
 

@@ -1,5 +1,5 @@
-import {MediaList, MediaListStatus, MediaType} from './AniList/types';
-import {LibraryEntry} from './MyAnimeList/types';
+import {MediaList, MediaListStatus, MediaType} from './AniList';
+import {LibraryEntry} from './MyAnimeList';
 
 export type CommonType = MediaType;
 export type CommonStatus = MediaListStatus;
@@ -21,8 +21,9 @@ export interface CommonStatusEntry {
 
 export interface ListEntryMapper<T> {
     exportToCommon(entry: T, common?: CommonStatusEntry): CommonStatusEntry;
-    getScore(nativeScore: any): number;
-    getStatus(nativeStatus: any): CommonStatus;
+    getCommonScore(nativeScore: any): number;
+    getCommonStatus(nativeStatus: any): CommonStatus;
+    getNativeStatus(commonStatus: CommonStatus): any;
 }
 
 export interface ServiceChanges {
