@@ -1,6 +1,5 @@
-import {CommonStatusEntry, ListEntryMapper} from '../common';
+import {CommonStatus, CommonStatusEntry, ListEntryMapper} from '../common';
 import {AnimeLibraryEntry, LibraryEntry, MangaLibraryEntry} from './types';
-import {MediaListStatus} from "../AniList/types";
 
 class MyAnimeListMapper implements ListEntryMapper<LibraryEntry> {
     exportToCommon(entry: LibraryEntry, common?: CommonStatusEntry): CommonStatusEntry {
@@ -8,20 +7,20 @@ class MyAnimeListMapper implements ListEntryMapper<LibraryEntry> {
             status: this.getStatus(entry.my_status),
             score: this.getScore(entry.my_score),
             services: {
-                mal: entry
+                myAnimeList: entry
             }
         };
 
         if (entry['series_animedb_id']) {
             const animeEntry = entry as AnimeLibraryEntry;
             commonProposal.type = 'ANIME';
-            commonProposal.malId = parseInt(animeEntry.series_animedb_id || '');
+            commonProposal.myAnimeListId = parseInt(animeEntry.series_animedb_id || '');
             commonProposal.progress = parseInt(animeEntry.my_watched_episodes);
             commonProposal.repeat = parseInt(animeEntry.my_rewatching);
         } else {
             const mangaEntry = entry as MangaLibraryEntry;
             commonProposal.type = 'MANGA';
-            commonProposal.malId = parseInt(mangaEntry.series_mangadb_id || '');
+            commonProposal.myAnimeListId = parseInt(mangaEntry.series_mangadb_id || '');
             commonProposal.progress = parseInt(mangaEntry.my_read_chapters);
             commonProposal.progressVolumes = parseInt(mangaEntry.my_read_volumes);
             commonProposal.repeat = parseInt(mangaEntry.my_rereadingg);
@@ -34,7 +33,7 @@ class MyAnimeListMapper implements ListEntryMapper<LibraryEntry> {
         return parseInt(malScore);
     }
 
-    getStatus(malStatus: string): MediaListStatus {
+    getStatus(malStatus: string): CommonStatus {
         switch(malStatus) {
             case '1': return 'CURRENT';
             case '2': return 'COMPLETED';

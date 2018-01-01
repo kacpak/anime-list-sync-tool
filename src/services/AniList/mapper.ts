@@ -1,4 +1,4 @@
-import {CommonStatusEntry, ListEntryMapper} from '../common';
+import {CommonStatus, CommonStatusEntry, ListEntryMapper} from '../common';
 import {MediaList, MediaListStatus} from './types';
 
 class AniListMapper implements ListEntryMapper<MediaList> {
@@ -10,15 +10,15 @@ class AniListMapper implements ListEntryMapper<MediaList> {
             progress: entry.progress,
             progressVolumes: entry.progressVolumes,
             repeat: entry.repeat,
-            anilistId: entry.media.id,
-            malId: entry.media.idMal,
+            aniListId: entry.media.id,
+            myAnimeListId: entry.media.idMal,
             services: {
-                anilist: entry
+                aniList: entry
             }
         };
 
-        if (commonProposal.malId === undefined || commonProposal.malId === 0) {
-            console.error('NO MAL data for ', entry.media.title.english);
+        if (!commonProposal.myAnimeListId) {
+            console.error('No MyAnimeList id found for', entry.media.title.userPreferred);
         }
 
         return Object.assign({}, common, commonProposal);
@@ -28,7 +28,7 @@ class AniListMapper implements ListEntryMapper<MediaList> {
         return Math.round(aniListScore);
     }
 
-    getStatus(aniListStatus: MediaListStatus): MediaListStatus {
+    getStatus(aniListStatus: MediaListStatus): CommonStatus {
         return aniListStatus;
     }
 }

@@ -73,3 +73,30 @@ async function getMediaStatusList(type: MediaType): Promise<MediaLists> {
         return {} as MediaLists;
     }
 }
+
+export async function getAniListIdFromMalId(myAnimeListId: number): Promise<number|undefined> {
+    try {
+        const media = await graphql(`
+        query ($myAnimeListId: Int) {
+            Media(idMal: $myAnimeListId) {
+                id
+                title {
+                    romaji
+                    english
+                    native
+                    userPreferred
+                }
+            }
+        }
+        `, {
+            myAnimeListId
+        });
+
+        if (media.Media) {
+            return media.Media.id;
+        }
+
+    } catch (e) {
+        console.error(e);
+    }
+}
