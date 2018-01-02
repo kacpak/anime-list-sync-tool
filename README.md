@@ -5,7 +5,11 @@
 * Node.js 8 LTS
 * yarn
 * `yarn install` in root directory to fetch required project dependencies
-* `cp .env-example .env` in root directory and update `.env` with proper values
+* AniList client secret token  
+  [Create new Api v2 client](https://anilist.co/settings/developer/v2/client/new)
+    * `Name` - your application name
+    * `Client Redirect Uri` - `http://localhost:8666`
+* `cp .env-example .env` in root directory and update `.env` with proper values (MAL user/pass, AniList secret token)
 
 ## Running
 * `yarn start` in root directory
@@ -15,9 +19,3 @@
 * `yarn dev` to run application in debug mode compiling on the fly
 * `yarn test` to run tests
     * `yarn test:dev` to run tests continously with code changes watcher
-
-# AniList
-## Client
-* [Create new Api v2 client](https://anilist.co/settings/developer/v2/client/new)
-    * `Name` - your application name
-    * `Client Redirect Uri` - `http://localhost:8666`
